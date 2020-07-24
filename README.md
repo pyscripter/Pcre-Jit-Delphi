@@ -92,6 +92,6 @@ As you can see the increase in performance is impressive.
 
 ## Credits
 
-Many thanks to [Mahdi Safsafi](https://github.com/MahdiSafsafi) that provided the assembly code for __chkstk.
+Many thanks to [Mahdi Safsafi](https://github.com/MahdiSafsafi) who provided the assembly code for __chkstk.
 
 
