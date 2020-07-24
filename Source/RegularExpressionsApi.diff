@@ -1,0 +1,244 @@
+diff --git a/Source/System.RegularExpressionsAPI.pas b/Source/System.RegularExpressionsAPI.pas
+index 058683f..8df05d9 100644
+--- a/Source/System.RegularExpressionsAPI.pas
++++ b/Source/System.RegularExpressionsAPI.pas
+@@ -116,6 +116,7 @@
+ {                                                                              }
+ {******************************************************************************}
+ 
++
+ unit System.RegularExpressionsAPI;
+ 
+ interface
+@@ -576,8 +577,9 @@ var
+   pcre_maketables: function: MarshaledAString; cdecl = nil;
+   pcre_refcount: function(argument_re: PPCRE; adjust: Integer): Integer; cdecl = nil;
+   pcre_study: function(const code: PPCRE; options: Integer; const errptr: PMarshaledAString): PPCREExtra; cdecl = nil;
++  pcre_free_study: procedure(extra: PPCREExtra); cdecl = nil;
+   pcre_version: function: MarshaledAString; cdecl = nil;
+-  
++
+ {$NODEFINE pcre_get_substring_list}
+ 
+ function LoadPCRELib: Boolean;
+@@ -593,6 +595,7 @@ implementation
+ 
+ {$IFDEF MSWINDOWS}
+ uses
++  WinApi.Windows,
+   System.Win.Crtl; {$NOINCLUDE System.Win.Crtl}
+ {$ENDIF MSWINDOWS}
+ {$IF defined(DYNAMIC_LIB) and defined(POSIX)}
+@@ -608,43 +611,45 @@ var
+ {$IFDEF MSWINDOWS}
+   {$IFDEF PCRE16}
+     {$IF Defined(Win32)}
+-      {$L pcre16_study.obj}
+-      {$L pcre16_compile.obj}
+-      {$L pcre16_config.obj}
+-      {$L pcre16_dfa_exec.obj}
+-      {$L pcre16_exec.obj}
+-      {$L pcre16_fullinfo.obj}
+-      {$L pcre16_get.obj}
+-      {$L pcre16_maketables.obj}
+-      {$L pcre16_newline.obj}
+-      {$L pcre16_ord2utf16.obj}
+-      {$L pcre16_refcount.obj}
+-      {$L pcre16_tables.obj}
+-      {$L pcre16_string_utils.obj}
+-      {$L pcre16_ucd.obj}
+-      {$L pcre16_valid_utf16.obj}
+-      {$L pcre16_version.obj}
+-      {$L pcre16_xclass.obj}
+-      {$L pcre16_default_tables.obj}
++      {$L obj\pcre\win32\pcre16_study.obj}
++      {$L obj\pcre\win32\pcre16_compile.obj}
++      {$L obj\pcre\win32\pcre16_config.obj}
++      {$L obj\pcre\win32\pcre16_dfa_exec.obj}
++      {$L obj\pcre\win32\pcre16_exec.obj}
++      {$L obj\pcre\win32\pcre16_fullinfo.obj}
++      {$L obj\pcre\win32\pcre16_get.obj}
++      {$L obj\pcre\win32\pcre16_maketables.obj}
++      {$L obj\pcre\win32\pcre16_newline.obj}
++      {$L obj\pcre\win32\pcre16_ord2utf16.obj}
++      {$L obj\pcre\win32\pcre16_refcount.obj}
++      {$L obj\pcre\win32\pcre16_tables.obj}
++      {$L obj\pcre\win32\pcre16_string_utils.obj}
++      {$L obj\pcre\win32\pcre16_ucd.obj}
++      {$L obj\pcre\win32\pcre16_valid_utf16.obj}
++      {$L obj\pcre\win32\pcre16_version.obj}
++      {$L obj\pcre\win32\pcre16_xclass.obj}
++      {$L obj\pcre\win32\pcre16_chartables.obj}
++      {$L obj\pcre\win32\pcre16_jit_compile.obj}
+     {$ELSEIF Defined(Win64)}
+-      {$L pcre16_study.o}
+-      {$L pcre16_compile.o}
+-      {$L pcre16_config.o}
+-      {$L pcre16_dfa_exec.o}
+-      {$L pcre16_exec.o}
+-      {$L pcre16_fullinfo.o}
+-      {$L pcre16_get.o}
+-      {$L pcre16_maketables.o}
+-      {$L pcre16_newline.o}
+-      {$L pcre16_ord2utf16.o}
+-      {$L pcre16_refcount.o}
+-      {$L pcre16_string_utils.o}
+-      {$L pcre16_tables.o}
+-      {$L pcre16_ucd.o}
+-      {$L pcre16_valid_utf16.o}
+-      {$L pcre16_version.o}
+-      {$L pcre16_xclass.o}
+-      {$L pcre16_default_tables.o}
++      {$L obj\pcre\win64\pcre16_study.obj}
++      {$L obj\pcre\win64\pcre16_compile.obj}
++      {$L obj\pcre\win64\pcre16_config.obj}
++      {$L obj\pcre\win64\pcre16_dfa_exec.obj}
++      {$L obj\pcre\win64\pcre16_exec.obj}
++      {$L obj\pcre\win64\pcre16_fullinfo.obj}
++      {$L obj\pcre\win64\pcre16_get.obj}
++      {$L obj\pcre\win64\pcre16_maketables.obj}
++      {$L obj\pcre\win64\pcre16_newline.obj}
++      {$L obj\pcre\win64\pcre16_ord2utf16.obj}
++      {$L obj\pcre\win64\pcre16_refcount.obj}
++      {$L obj\pcre\win64\pcre16_string_utils.obj}
++      {$L obj\pcre\win64\pcre16_tables.obj}
++      {$L obj\pcre\win64\pcre16_ucd.obj}
++      {$L obj\pcre\win64\pcre16_valid_utf16.obj}
++      {$L obj\pcre\win64\pcre16_version.obj}
++      {$L obj\pcre\win64\pcre16_xclass.obj}
++      {$L obj\pcre\win64\pcre16_chartables.obj}
++      {$L obj\pcre\win64\pcre16_jit_compile.obj}
+     {$ENDIF}
+   {$ELSE}
+     {$IF Defined(Win32)}
+@@ -864,22 +869,84 @@ begin
+   if pattern <> nil then
+     __pcre_free(pattern);
+   if hints <> nil then
+-    __pcre_free(hints);
++    pcre_free_study(hints);
+   if chartable <> nil then
+     __pcre_free(chartable);
+ end;
+ 
+ {$IFDEF WIN64}
+-procedure __chkstk;
++//procedure __chkstk; cdecl; external name '__chkstk';
++procedure __chkstk();
+ asm
++  .NOFRAME
++  sub rsp, $10
++  mov [rsp], r10
++  mov [rsp+8], r11
++  xor r11,r11
++  lea r10, [rsp+$18]
++  sub r10,rax
++  cmovb r10,r11
++  mov r11, qword ptr gs:[$10]
++  cmp r10,r11
++  db $f2
++  jae @@L1
++  and r10w,$F000
++@@L2:
++  lea r11, [r11-$1000]
++  mov byte [r11],0
++  cmp r10,r11
++  db $f2
++  jne @@L2
++@@L1:
++  mov r10, [rsp]
++  mov r11, [rsp+8]
++  add rsp, $10
++  db $f2
++  ret
+ end;
+ {$ENDIF WIN64}
+ 
+ {$IFDEF WIN32}
+-procedure __chkstk_noalloc;
+-asm
++procedure __chkstk(); // function chkstk(LocalFrameSize: Integer): Pointer;
++const
++  _PAGESIZE_ = $1000;
++  asm
++    push    ecx
++
++    // Calculate new TOS.
++
++    lea     ecx, [esp] + 8 - 4      // TOS before entering function + size for ret value
++    sub     ecx, eax                // new TOS
++
++    // Handle allocation size that results in wraparound.
++    // Wraparound will result in StackOverflow exception.
++
++    sbb     eax, eax                // 0 if CF==0, ~0 if CF==1
++    not     eax                     // ~0 if TOS did not wrapped around, 0 otherwise
++    and     ecx, eax                // set to 0 if wraparound
++
++    mov     eax, esp                   // current TOS
++    and     eax, not ( _PAGESIZE_ - 1) // Round down to current page boundary
++
++  @@cs10:
++    cmp     ecx, eax                // Is new TOS
++    db $f2
++    jb      @@cs20                  // in probed page?
++    mov     eax,   ecx              // yes.
++    pop     ecx
++    xchg    esp,   eax              // update esp
++    mov     eax,   [eax]            // get return address
++    mov     [esp], eax              // and put it at new TOS
++    db $f2
++    ret
++
++    // Find next lower page and probe
++  @@cs20:
++    sub     eax, _PAGESIZE_         // decrease by PAGESIZE
++    test    [eax], eax              // probe page.
++    jmp     @@cs10
+ end;
+-{$ENDIF WIN64}
++{$ENDIF WIN32}
+ 
+ {$IFDEF DYNAMIC_LIB}
+ function LoadPCRELib: Boolean;
+@@ -923,6 +990,7 @@ begin
+       @pcre_maketables := GetProcAddr('pcre_maketables');
+       @pcre_refcount := GetProcAddr('pcre_refcount');
+       @pcre_study := GetProcAddr('pcre_study');
++      @pcre_free_study := GetProcAddr('pcre_free_study');
+       @pcre_version := GetProcAddr('pcre_version');
+ 
+       // Hook the global variables exported from the library for memory allocation
+@@ -945,6 +1013,32 @@ begin
+ end;
+ {$ENDIF}
+ 
++
++{$IFDEF WIN32}
++procedure __pcre16_ucp_typerange; external;
++
++Const
++  __imp__WaitForSingleObject: Pointer = @WaitForSingleObject;
++  __imp__ReleaseMutex: Pointer = @ReleaseMutex;
++  __imp__CreateMutexA: Pointer = @CreateMutexA;
++  __imp__GetSystemInfo: Pointer = @GetSystemInfo;
++  __imp__VirtualAlloc: Pointer = @VirtualAlloc;
++  __imp__VirtualFree: Pointer = @VirtualFree;
++{$ENDIF WIN32}
++
++
++{$IFDEF WIN64}
++procedure _pcre16_ucp_typerange; external;
++
++Const
++  __imp_WaitForSingleObject: Pointer = @WaitForSingleObject;
++  __imp_ReleaseMutex: Pointer = @ReleaseMutex;
++  __imp_CreateMutexA: Pointer = @CreateMutexA;
++  __imp_GetSystemInfo: Pointer = @GetSystemInfo;
++  __imp_VirtualAlloc: Pointer = @VirtualAlloc;
++  __imp_VirtualFree: Pointer = @VirtualFree;
++{$ENDIF WIN64}
++
+ {$IFDEF STATIC_LIB}
+ initialization
+   set_pcre_malloc(@__pcre_malloc);
