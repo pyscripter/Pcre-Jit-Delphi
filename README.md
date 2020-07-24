@@ -20,7 +20,7 @@ all you need to do is call RegEx.StudyJIT before matching.
 The compiled object files that the patched System.RegularExpressionsAPI.pas needs, are provided in the Source\obj folder.  To recreate these files from the PCRE sources you
 need the following:
 
-1. You need to have [Visual Studio](https://visualstudio.microsoft.com/) installed. [Community edition](https://visualstudio.microsoft.com/vs/community/) will do.
+1. You need to have [Visual Studio](https://visualstudio.microsoft.com/) installed. The [Community edition](https://visualstudio.microsoft.com/vs/community/) will do.
 2. Execute the Powershell scripts CompilePCREx64 and CompilePCREx86 to recreate the Win64 and Win32 object files.
 
 
