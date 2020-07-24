@@ -7,10 +7,11 @@ order to provide access to JIT.
 
 ## Instructions for using Pcre-Jit-Delphi
 
-1. You first need to create the patched System.RegularExpressionsAPI.pas file in the Source directory (it is not in the repository due to licensing restrictions). 
+1. Clone this repository.
+2. You then need to create the patched System.RegularExpressionsAPI.pas file in the Source directory (it is not in the repository due to licensing restrictions). 
 The PowerShell script PatchRegularExpressionsAPI.ps1 does that. It copies the unit from the Delphi installation direcotry into the Source directory and then applies the patch "RegularExpressionsApi.diff" located in the same directory.  Git needs to be accessible from the command line for this to work.  The script assumes you have Delphi 10.4 installed. If not, you can manually apply the patch by studying RegularExpressionsApi.diff,
 which is relatively easy (small number of changes).
-2. To use PCRE JIT in your delphi projects, you need to add the Source\System.RegularExpressionsAPI.pas to your project, so that it is used instead of he one provided by
+3. To use PCRE JIT in your delphi projects, you need to add the Source\System.RegularExpressionsAPI.pas to your project, so that it is used instead of he one provided by
 Delphi.  You can then study the class helpers in the Benchmark.dpr console program (in the Demos directory) to see how you can use the PCRE JIT.  With the class helpers
 all you need to do is call RegEx.StudyJIT before matching.
 
