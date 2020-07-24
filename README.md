@@ -16,7 +16,7 @@ all you need to do is call RegEx.StudyJIT before matching.
 
 ## Instructions for compiling PCRE from sources
 
-The compiled object files that the patched System.RegularExpressionsAPI.pas needs are provided in the Source\obj folder.  To recreate these files from the PCRE sources you
+The compiled object files that the patched System.RegularExpressionsAPI.pas needs, are provided in the Source\obj folder.  To recreate these files from the PCRE sources you
 need the following:
 
 1. You need to have [Visual Studio](https://visualstudio.microsoft.com/) installed. [Community edition](https://visualstudio.microsoft.com/vs/community/) will do.
