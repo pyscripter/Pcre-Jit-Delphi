@@ -95,5 +95,5 @@ As you can see the increase in performance is impressive.
 
 Many thanks to [Mahdi Safsafi](https://github.com/MahdiSafsafi) who provided the assembly code for __chkstk.
 
-# Please note the PCRE-Jit is now included in Delphi 11.2.
+### Please note the PCRE-Jit is now included in Delphi 11.2.
 
